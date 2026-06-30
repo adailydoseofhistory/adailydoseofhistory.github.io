@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — A Daily Dose of Quiz</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="about">
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="index.html"><span class="pill-dot"></span> A Daily Dose of Quiz</a>
+    <nav class="links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="page-content">
+    <h1>About A Daily Dose of Quiz</h1>
+    <p>A Daily Dose of Quiz is a free trivia website that publishes a fresh batch of multiple-choice questions every day, spanning history, science, sports, entertainment, current affairs, and more.</p>
+    <p>Every quiz is reviewed and added by the editor before it goes live, so the questions on this site stay consistent and accurate — nothing here is generated or edited by visitors.</p>
+    <h2>Why we built this</h2>
+    <p>A few minutes of trivia is a simple, free way to learn something new and keep your general knowledge sharp. Our goal is to make that a daily habit — one short dose at a time.</p>
+    <h2>Get in touch</h2>
+    <p>Found an error in a question, or want to suggest a category? Reach out at <strong>your-email@example.com</strong> (replace with your real contact email).</p>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div>© <span id="year"></span> A Daily Dose of Quiz.</div>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <a href="about.html">About</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <img id="visit-counter" alt="Visit counter" style="height:20px;">
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

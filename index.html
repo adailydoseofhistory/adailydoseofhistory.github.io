@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Daily Dose of Quiz — Free Daily MCQ Quizzes</title>
+<meta name="description" content="A fresh dose of 100 multiple-choice quiz questions every day, across History, Science, Sports, Bollywood and more.">
+<link rel="stylesheet" href="style.css">
+
+<!-- Google AdSense: replace ca-pub-XXXXXXXXXXXXXXXX with your own Publisher ID once approved -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</head>
+<body data-page="home">
+
+<header class="site">
+  <div class="nav">
+    <a class="brand" href="index.html"><span class="pill-dot"></span> A Daily Dose of Quiz</a>
+    <nav class="links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <span class="eyebrow">● Updated daily · 100 new questions</span>
+    <h1>Your daily dose of trivia, taken one quiz at a time.</h1>
+    <p class="sub">Pick a category, take a quiz, see how you score. New questions added every single day across every subject worth knowing.</p>
+    <div class="dose-counter">
+      <div class="stat"><div class="num mono" id="stat-total">—</div><div class="lbl">Total Questions</div></div>
+      <div class="stat"><div class="num mono" id="stat-categories">—</div><div class="lbl">Categories</div></div>
+      <div class="stat"><div class="num mono" id="stat-date">—</div><div class="lbl">Latest Dose</div></div>
+    </div>
+  </section>
+
+  <!-- Ad slot: top of content -->
+  <div class="ad-slot">
+    <ins class="adsbygoogle" style="display:block;width:100%"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="0000000000"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
+
+  <section class="block">
+    <div class="section-head">
+      <h2>Browse by category</h2>
+      <span class="meta">Tap a pill to open today's quizzes</span>
+    </div>
+    <div class="blister" id="blister-grid">
+      <div class="empty-state">Loading today's dose…</div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div>© <span id="year"></span> A Daily Dose of Quiz. All questions are original or curated by the editor.</div>
+    <div style="display:flex; gap:16px; align-items:center;">
+      <a href="about.html">About</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <img id="visit-counter" alt="Visit counter" style="height:20px;">
+    </div>
+  </div>
+</footer>
+
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
