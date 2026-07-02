@@ -244,3 +244,17 @@ a:focus-visible, button:focus-visible, .option:focus-visible{
 @media (prefers-reduced-motion: reduce){
   *{transition:none !important;}
 }
+/* ---------- 30-second countdown timer ---------- */
+.timer-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.timer-ring{position:relative;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.timer-bg{stroke:var(--line);}
+.timer-arc{stroke:var(--teal);transition:stroke-dashoffset .9s linear,stroke .4s;}
+.timer-num{position:absolute;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1rem;color:var(--ink);}
+.timer-label{font-size:.82rem;color:var(--muted);font-weight:500;}
+.timer-pulse .timer-ring{animation:pulse-ring .6s ease-in-out infinite alternate;}
+@keyframes pulse-ring{from{transform:scale(1);}to{transform:scale(1.08);}}
+.timer-ok .timer-arc{stroke:var(--teal)!important;}
+.timer-ok .timer-num{color:var(--teal);}
+.timer-fail .timer-arc{stroke:var(--red)!important;}
+.timer-fail .timer-num{color:var(--red);}
+.timeout-msg{font-weight:700;font-size:.95rem;color:var(--red);background:#E6394614;border:1px solid #E6394633;border-radius:10px;padding:10px 16px;margin-bottom:12px;text-align:center;}
