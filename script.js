@@ -3,6 +3,7 @@
    and renders whichever page is currently open. No build step needed. */
 
 const CATEGORY_COLORS = ["#FF6B35","#1B998B","#E63946","#6C5CE7","#0EA5A5","#D88C2B","#5E60CE","#2A9D8F"];
+const TIMER_SECONDS = 30; // change this number to adjust timer duration
 
 function colorForCategory(name){
   let hash = 0;
@@ -115,7 +116,7 @@ async function initCategory(){
   }).join('');
 }
 
-/* ---------------- QUIZ PAGE (single question + simple flow through category) ---------------- */
+/* ---------------- QUIZ PAGE with 30-second timer ---------------- */
 async function initQuiz(){
   const params = new URLSearchParams(location.search);
   const cat = params.get('cat');
@@ -146,7 +147,22 @@ async function initQuiz(){
   const nextItem = items[idx+1];
 
   shell.innerHTML = `
-    <div class="quiz-progress"><div style="width:${progressPct}%"></div></div>
+    <div class="quiz-progress"><div id="progress-bar" style="width:${progressPct}%"></div></div>
+
+    <!-- TIMER -->
+    <div class="timer-wrap">
+      <div class="timer-ring">
+        <svg viewBox="0 0 44 44" width="64" height="64">
+          <circle class="timer-bg" cx="22" cy="22" r="18" fill="none" stroke-width="3"/>
+          <circle class="timer-arc" id="timer-arc" cx="22" cy="22" r="18" fill="none" stroke-width="3"
+            stroke-dasharray="113.1" stroke-dashoffset="0"
+            stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        </svg>
+        <span class="timer-num" id="timer-num">${TIMER_SECONDS}</span>
+      </div>
+      <span class="timer-label">seconds left</span>
+    </div>
+
     <div class="question-card">
       <div class="qnum mono">Question ${idx+1} of ${items.length} · ${cat}</div>
       <h3>${current.Question}</h3>
@@ -161,42 +177,97 @@ async function initQuiz(){
 
   const optWrap = document.getElementById('options');
   const explanationBox = document.getElementById('explanation');
+  const timerNum = document.getElementById('timer-num');
+  const timerArc = document.getElementById('timer-arc');
+  const timerWrap = document.querySelector('.timer-wrap');
   let answered = false;
+  let timeLeft = TIMER_SECONDS;
+  const arcLen = 113.1; // 2 * PI * 18
 
+  /* ---- render options ---- */
   optWrap.innerHTML = options.map(o=>`
     <div class="option" data-key="${o.key}" tabindex="0" role="button">
       <span class="key">${o.key}</span><span>${o.text}</span>
     </div>`).join('');
 
+  /* ---- reveal answer logic ---- */
+  function revealAnswer(chosenKey){
+    if (answered) return;
+    answered = true;
+    clearInterval(timerInterval);
+
+    const correct = current.Answer.trim().toUpperCase();
+    optWrap.querySelectorAll('.option').forEach(o=>{
+      if (o.dataset.key === correct) o.classList.add('correct');
+      else if (o.dataset.key === chosenKey) o.classList.add('incorrect');
+    });
+    if (current.Explanation) explanationBox.classList.add('show');
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) nextBtn.disabled = false;
+
+    // timer turns green if correct, red if wrong or time ran out
+    timerWrap.classList.add(chosenKey === correct ? 'timer-ok' : 'timer-fail');
+  }
+
+  /* ---- option click / keyboard ---- */
   optWrap.querySelectorAll('.option').forEach(el=>{
-    const select = ()=>{
-      if (answered) return;
-      answered = true;
-      const chosen = el.dataset.key;
-      const correct = current.Answer.trim().toUpperCase();
-      optWrap.querySelectorAll('.option').forEach(o=>{
-        if (o.dataset.key === correct) o.classList.add('correct');
-        else if (o.dataset.key === chosen) o.classList.add('incorrect');
-      });
-      if (current.Explanation) explanationBox.classList.add('show');
-      const nextBtn = document.getElementById('next-btn');
-      if (nextBtn) nextBtn.disabled = false;
-    };
-    el.addEventListener('click', select);
-    el.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' ') select(); });
+    el.addEventListener('click', ()=> revealAnswer(el.dataset.key));
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter' || e.key===' ') revealAnswer(el.dataset.key);
+    });
   });
 
+  /* ---- next button ---- */
   const nextBtn = document.getElementById('next-btn');
   if (nextBtn) nextBtn.addEventListener('click', ()=>{
     location.href = `quiz.html?cat=${encodeURIComponent(cat)}&id=${encodeURIComponent(nextItem.ID)}`;
   });
+
+  /* ---- countdown timer ---- */
+  function updateTimerVisuals(){
+    timerNum.textContent = timeLeft;
+    // shrink arc proportionally
+    const offset = arcLen * (1 - timeLeft / TIMER_SECONDS);
+    timerArc.style.strokeDashoffset = offset;
+
+    // color shift: green → yellow → red
+    const pct = timeLeft / TIMER_SECONDS;
+    if (pct > 0.5){
+      timerArc.style.stroke = '#1B998B'; // green
+    } else if (pct > 0.25){
+      timerArc.style.stroke = '#D88C2B'; // amber
+      timerWrap.classList.add('timer-pulse');
+    } else {
+      timerArc.style.stroke = '#E63946'; // red
+    }
+  }
+
+  updateTimerVisuals();
+
+  const timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerVisuals();
+    if (timeLeft <= 0){
+      clearInterval(timerInterval);
+      if (!answered){
+        // time's up — reveal correct answer, mark as timed out
+        revealAnswer('__TIMEOUT__');
+        timerNum.textContent = '0';
+        timerWrap.classList.add('timer-fail');
+        // show a "Time's up!" message above options
+        const msg = document.createElement('div');
+        msg.className = 'timeout-msg';
+        msg.textContent = "⏰ Time's up!";
+        optWrap.insertAdjacentElement('beforebegin', msg);
+      }
+    }
+  }, 1000);
 }
 
-/* ---------------- VISIT COUNTER (free badge, no signup) ---------------- */
+/* ---------------- VISIT COUNTER ---------------- */
 function initVisitCounter(){
   const el = document.getElementById('visit-counter');
   if (!el) return;
-  const id = (typeof VISIT_COUNTER_ID !== 'undefined' && VISIT_COUNTER_ID) ? VISIT_COUNTER_ID : 'dailydosequiz';
   el.src = `https://hits.sh/${location.hostname || 'example.com'}.svg?label=visits&color=ff6b35&style=flat-square&logo=fire`;
   el.alt = "Visit counter";
 }
